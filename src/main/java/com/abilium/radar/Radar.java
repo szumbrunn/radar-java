@@ -1,33 +1,31 @@
 package com.abilium.radar;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.ojalgo.matrix.BasicMatrix;
 import org.ojalgo.matrix.BasicMatrix.Factory;
 import org.ojalgo.matrix.PrimitiveMatrix;
-import org.ojalgo.matrix.store.PhysicalStore;
-import org.ojalgo.netio.BasicLogger;
 
 public class Radar {
-    public boolean someLibraryMethod() {
-        return true;
-    }
     
-    
-    
+	/**
+	 * Demonstration method on how to use this library
+	 * @param args
+	 */
     public static void main(String[] args) {
     	
     	Factory<BasicMatrix> matrixFactory = PrimitiveMatrix.FACTORY;
     	
+    	// Adjacency matrix for a graph having 4 nodes and 4 edges
     	double[][] dA = {
                 {0.0, 1.0, 0.0, 1.0},
                 {1.0, 0.0, 1.0, 0.0},
                 {0.0, 1.0, 0.0, 1.0},
-                {1.0, 1.0, 1.0, 1.0}
+                {1.0, 0.0, 1.0, 0.0}
             };
         
+    	// Attribute matrix holding values per node
         double[][] dX = {
                 {4.0, 1.0},
                 {5.0, 1.0},
@@ -35,6 +33,7 @@ public class Radar {
                 {5.0, 1.0}
             };
 		
+        // hyperparameters
         double alpha = 0.01;
         double beta = 0.01;
         double gamma = 0.1;
@@ -42,13 +41,14 @@ public class Radar {
         BasicMatrix X = matrixFactory.rows(dX);
         BasicMatrix A = matrixFactory.rows(dA);
         
+        // define number of maximum iterations
         int niters = 20;
     	
-    	
+        // get the anomaly score list for the graph
 		List<Double> score = RadarImpl.scoreFromRadar(X, A, alpha, beta, gamma, niters);
     	
+		// print the score list
 		System.out.println(Arrays.toString(score.toArray()));
-    	//BasicMatrix bm = RadarImpl.makeDiagonal(matrixFactory.makeRowVector(list));
   	}
 
 }
