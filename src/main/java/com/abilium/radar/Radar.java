@@ -44,8 +44,11 @@ public class Radar {
         // define number of maximum iterations
         int niters = 20;
     	
+        // return top m instances
+        int m = 2;
+        
         // get the anomaly score list for the graph
-		List<Double> score = RadarImpl.scoreFromRadar(X, A, alpha, beta, gamma, niters);
+		List<Node> score = RadarImpl.scoreFromRadar(X, A, alpha, beta, gamma, niters, m);
     	
 		// print the score list
 		System.out.println(Arrays.toString(score.toArray()));

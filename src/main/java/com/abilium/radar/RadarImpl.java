@@ -1,6 +1,7 @@
 package com.abilium.radar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.ojalgo.function.implementation.PrimitiveFunction;
@@ -35,17 +36,24 @@ public class RadarImpl {
 	 * @param niters maximum number of iterations
 	 * @return ordered score list
 	 */
-	public static List<Double> scoreFromRadar(BasicMatrix X, BasicMatrix A, double alpha, double beta, double gamma, int niters) {
-		int m = X.getColDim();
-		BasicMatrix colVector = matrixFactory.makeZero(m, 1).add(1); // make 1 row vector
+	public static List<Node> scoreFromRadar(BasicMatrix X, BasicMatrix A, double alpha, double beta, double gamma, int niters, int m) {
+		int n = X.getColDim();
+		BasicMatrix colVector = matrixFactory.makeZero(n, 1).add(1); // make 1 row vector
 		
     	BasicMatrix R = RadarImpl.radar(X, A, alpha, beta, gamma, niters);
 
-		List<Double> score = R.multiplyElements(R)
+		List<Double> scoreList = R.multiplyElements(R)
 								.multiplyRight(colVector)
 								.toPrimitiveStore().asList();
-		
-		return score;
+		List<Node> score = new ArrayList<>();
+		for(int i=0;i<scoreList.size();i++) {
+ 			score.add(new Node(i,scoreList.get(i)));
+		}
+		Collections.sort(score);
+		if(m>score.size()) {
+			m = score.size();
+		}
+		return score.subList(0, m);
 	}
 	
 	/**
