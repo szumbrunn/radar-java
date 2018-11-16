@@ -1,6 +1,7 @@
 package com.abilium.radar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,10 +42,11 @@ public class RadarImpl {
 		BasicMatrix colVector = matrixFactory.makeZero(n, 1).add(1); // make 1 row vector
 		
     	BasicMatrix R = RadarImpl.radar(X, A, alpha, beta, gamma, niters);
-
+    	
 		List<Double> scoreList = R.multiplyElements(R)
 								.multiplyRight(colVector)
 								.toPrimitiveStore().asList();
+
 		List<Node> score = new ArrayList<>();
 		for(int i=0;i<scoreList.size();i++) {
  			score.add(new Node(i,scoreList.get(i)));
@@ -86,6 +88,8 @@ public class RadarImpl {
 									.invert()
 									.multiplyRight(X);
 		
+		
+		
 		List<Double> obj = new ArrayList<>();
 		for(int i=0; i<niters; i++) {
 			// update w
@@ -94,6 +98,7 @@ public class RadarImpl {
 									.invert()
 									.multiplyRight(X.multiplyRight(X.transpose())
 													.subtract(X.multiplyRight(R.transpose())));
+			
 			PhysicalStore<Double> Wtmp = W.multiplyElements(W)
 										.multiplyRight(vector)
 										.toPrimitiveStore();
@@ -101,7 +106,7 @@ public class RadarImpl {
 			PhysicalStore<Double> WtmpCopy = Wtmp.copy();
 			WtmpCopy.modifyAll(PrimitiveFunction.INVERT);
 			Dw = makeDiagonal(PrimitiveMatrix.FACTORY.instantiate(WtmpCopy).multiply(0.5));
-
+			
 			// update r
 			R = matrixFactory.makeEye(n, n)
 					.add(Dr.multiply(beta))
@@ -110,6 +115,8 @@ public class RadarImpl {
 					.multiplyRight(X.subtract(W.transpose()
 												.multiplyRight(X)));
 			
+			
+			
 			PhysicalStore<Double> Rtmp = R.multiplyElements(R)
 										.multiplyRight(vectorCol)
 										.toPrimitiveStore();
@@ -117,6 +124,7 @@ public class RadarImpl {
 			PhysicalStore<Double> RtmpCopy = Rtmp.copy();
 			RtmpCopy.modifyAll(PrimitiveFunction.INVERT);
 			Dr = makeDiagonal(PrimitiveMatrix.FACTORY.instantiate(RtmpCopy).multiply(0.5));
+			
 			obj.add(X.subtract(W.transpose().multiplyRight(X)).subtract(R).getFrobeniusNorm().power(2)
 					.add(sum(Wtmp).multiply(alpha).getReal())
 					.add(sum(Rtmp).multiply(beta).getReal())
